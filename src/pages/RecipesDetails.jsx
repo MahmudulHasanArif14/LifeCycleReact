@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
+
 import { useParams } from "react-router";
 import { Recipe } from "../context/RecipeContext";
 import { useEffect } from "react";
+import { useState } from "react";
+import { useContext } from "react";
 
-import { useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
@@ -82,11 +84,38 @@ const RecipesDetails = () => {
      }, []);
     // [] stops the rendering loop by ensuring the effect runs only once when the component mounts and not on every update.
     
+    const [favourite, setfavourite] = useState(
+      JSON.parse(localStorage.getItem("favouriteRecipes")) || [],
+    );
 
+   
+    const isFavourite = favourite.some((item) => item.id == recipe?.id);
+    console.log(isFavourite);
 
+   const toggleFavourite = (id) => {
+     let updatedFavourite = [...favourite];
 
+     const index = updatedFavourite.findIndex((item) => item.id === id);
 
+     if (index !== -1) {
+       updatedFavourite.splice(index, 1);
+       toast.info("Recipe removed from favourites.");
+     } else {
+       const recipeToAdd = data.find((item) => item.id === id);
+       if (recipeToAdd) {
+         updatedFavourite.push(recipeToAdd);
+         toast.success("Recipe added to favourites!");
+       }
+     }
 
+     setfavourite(updatedFavourite);
+     localStorage.setItem("favouriteRecipes", JSON.stringify(updatedFavourite));
+   };
+
+    useEffect(() => {
+      console.log("Favourite updated:", favourite);
+    }
+    , [favourite]);
     
   return (
     <div className="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50 px-4 py-10">
@@ -118,7 +147,15 @@ const RecipesDetails = () => {
               className="space-y-6 p-6 sm:p-10"
               onSubmit={handleSubmit(SubmitHandler)}
             >
-              <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex flex-wrap items-start justify-between gap-4 relative">
+                <span>
+                    {isFavourite ? (
+                      <i onClick={() => toggleFavourite(recipe.id)} className="ri-heart-2-line text-3xl text-red-500 ri-heart-fill"></i>
+                    ) : (
+                      <i onClick={() => toggleFavourite(recipe.id)} className="ri-heart-add-line text-3xl text-red-500"></i>
+                    )}
+
+                </span>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500">
                   Recipe Details
                 </p>

@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router";
 
+
 const Navbar = () => {
   return (
     <div className="flex gap-5 text-lg mb-5 items-center justify-center">
@@ -32,6 +33,13 @@ const Navbar = () => {
         }
       >
         Create Recipe
+      </NavLink>
+
+      <NavLink
+        to="/Favourite"
+        className={(e) => (e.isActive ? "text-green-500" : "text-white")}
+      >
+        Favourite
       </NavLink>
     </div>
   );
